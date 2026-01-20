@@ -1,14 +1,10 @@
 Project Overview: Cross-Platform Sports Betting Analysis Tool
 
-Team Members:
-Jordan Forthman
-Grace Hutchinson
-Miguel Alvarez Machado
-Rodner Vincent
-Quin Mosely
-Ivan Liuliaev
+Team Members: Jordan Forthman, Grace Hutchinson, Miguel Alvarez Machado, Rodner Vincent, Quin Mosely, Ivan Liuliaev
 
+--------------------------------------------------------------------------------------------------------------------------------------------------------------
 Objectives:
+
 Real-Time Information Delivery: Provide live news, odds, and updates from reliable sources (e.g., ESPN or Odds API), enabling users to react swiftly—targeting <5-second latency for pushes, based on SignalR benchmarks.
 
 Statistical Aggregation and Visualization: Compile player/team stats (e.g., offensive/defensive rankings) and display trends via interactive charts, helping users identify patterns.
@@ -18,8 +14,10 @@ Matchup Analysis: Offer comparative insights on teams/players across categories 
 Subscription Model: Implement tiered access (free basic vs. premium features like advanced analytics), with user authentication to drive retention.
 
 Cross-Platform Accessibility: Deploy on iOS, Android, ensuring seamless offline support for cached data.
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Technology Stack: 
+
 Frontend: .NET MAUI with CommunityToolkit.Mvvm for iOS/Android, Blazor WebAssembly for web extension post-MVP. 
 
 Backend: ASP.NET Core Web API for RESTful services, SignalR for real-time websockets, hosted on Azure App Service for scalability. 
