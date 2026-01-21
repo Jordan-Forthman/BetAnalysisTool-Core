@@ -4,7 +4,7 @@ Team Members: Jordan Forthman, Grace Hutchinson, Miguel Alvarez Machado, Rodner 
 
 
 Objectives:
-----------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Real-Time Information Delivery: Provide live news, odds, and updates from reliable sources (e.g., ESPN or Odds API), enabling users to react swiftly—targeting <5-second latency for pushes, based on SignalR benchmarks.
 
@@ -17,7 +17,7 @@ Subscription Model: Implement tiered access (free basic vs. premium features lik
 Cross-Platform Accessibility: Deploy on iOS, Android, ensuring seamless offline support for cached data.
 
 Technology Stack: 
-----------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Frontend: .NET MAUI with CommunityToolkit.Mvvm for iOS/Android, Blazor WebAssembly for web extension post-MVP. 
 
@@ -30,4 +30,3 @@ Security/Auth: Auth0 for user logins and RBAC, ensuring compliance with data pri
 Visualization: Syncfusion (MAUI) and Chart.js (web) for charts/trends. 
 
 Deployment/Testing: Azure for hosting, TestFlight/Google Play for mobile betas.
-
