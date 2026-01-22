@@ -29,4 +29,10 @@
 	  <Folder Include="Services\" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Reference Include="Asana.Library">
+	    <HintPath>..\..\..\Asana\Asana.Library\bin\Debug\net8.0\Asana.Library.dll</HintPath>
+	  </Reference>
+	</ItemGroup>
+
 </Project>
