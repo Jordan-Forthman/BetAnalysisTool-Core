@@ -1,4 +1,4 @@
-﻿using BetAnalysisTool.Shared.Models;
+﻿using BetAnalysisTool.Core.Models;
 using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;

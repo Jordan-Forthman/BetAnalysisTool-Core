@@ -1,4 +1,4 @@
-﻿using BetAnalysisTool.Shared.Models;
+﻿using BetAnalysisTool.Core.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

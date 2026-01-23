@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 // Handles API's { "data": [], "meta": {} } structure. Use in services, e.g., PagedResponse<Player>.
 
-namespace BetAnalysisTool.Shared.Models
+namespace BetAnalysisTool.Core.Models
 {
     public class PagedResponse<T>
     {

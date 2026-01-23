@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BetAnalysisTool.Shared.Models
+namespace BetAnalysisTool.Core.Models
 {
     public class Stat
     {

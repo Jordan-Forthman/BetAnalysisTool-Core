@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BetAnalysisTool\BetAnalysisTool.Shared.csproj" />
+    <ProjectReference Include="..\..\BetAnalysisTool.Core\BetAnalysisTool.Core.csproj" />
   </ItemGroup>
 
 </Project>
