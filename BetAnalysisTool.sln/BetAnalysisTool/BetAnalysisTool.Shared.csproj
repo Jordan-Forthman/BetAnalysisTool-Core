@@ -22,6 +22,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Folder Include="Platforms\Android\" />
+		<Folder Include="Platforms\Windows\" />
 		<Folder Include="Util\" />
 		<Folder Include="Services\" />
 	</ItemGroup>
