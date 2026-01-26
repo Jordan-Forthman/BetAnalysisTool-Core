@@ -76,4 +76,8 @@
 	  </None>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\..\BetAnalysisTool.Core\BetAnalysisTool.Core.csproj" />
+	</ItemGroup>
+
 </Project>
