@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="BetAnalysisTool.Maui.Views.LoginPage"
+             Title="Login"
+             Shell.NavBarIsVisible="False">
+	<ContentPage.Background>
+		<LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+			<GradientStop Color="Black" Offset="0.1" />
+			<GradientStop Color="#2C2C2C" Offset="1.0" />
+		</LinearGradientBrush>
+	</ContentPage.Background>
+
+	<Grid RowDefinitions="Auto, *">
+
+		<Border Grid.Row="0"
+                BackgroundColor="#512BD4"
+                Stroke="#512BD4"
+                StrokeShape="RoundRectangle 8"
+                HorizontalOptions="Start"
+                VerticalOptions="Start"
+                Margin="20,20,0,0"
+                Padding="20,10">
+			<Label Text="Login"
+                   TextColor="White"
+                   FontAttributes="Bold"
+                   FontSize="16"/>
+		</Border>
+
+		<VerticalStackLayout Grid.Row="1"
+                             Spacing="25"
+                             Padding="30"
+                             VerticalOptions="Center">
+
+			<Label Text="BetAnalysis"
+                   TextColor="White"
+                   FontSize="32"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center" />
+
+			<Entry Placeholder="Username"
+                   Text="{Binding Username}"
+                   PlaceholderColor="#999999"
+                   TextColor="White"
+                   BackgroundColor="#1A1A1A" />
+
+			<Entry Placeholder="Password"
+                   IsPassword="True"
+                   Text="{Binding Password}"
+                   PlaceholderColor="#999999"
+                   TextColor="White"
+                   BackgroundColor="#1A1A1A" />
+
+			<Button Text="Sign In"
+                    Command="{Binding LoginCommand}"
+                    BackgroundColor="#512BD4"
+                    TextColor="White"
+                    CornerRadius="8"
+                    HeightRequest="50"
+                    FontAttributes="Bold"/>
+
+		</VerticalStackLayout>
+	</Grid>
+
+</ContentPage>
