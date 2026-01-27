@@ -3,13 +3,38 @@
     x:Class="BetAnalysisTool.Maui.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:BetAnalysisTool.Maui.Views"
     xmlns:local="clr-namespace:BetAnalysisTool.Maui"
     Shell.FlyoutBehavior="Disabled"
-    Title="BetAnalysisTool.Maui">
+    Title="BetAnalysisTool">
 
     <ShellContent
         Title="Login"
-        ContentTemplate="{DataTemplate local:Views.LoginPage}"
+        ContentTemplate="{DataTemplate views:LoginPage}"
         Route="LoginPage" />
+
+    <TabBar Route="MainApp">
+
+        <Tab Title="Dashboard">
+            <ShellContent ContentTemplate="{DataTemplate views:DashboardPage}" Route="DashboardPage" />
+        </Tab>
+        <!-- change the direction to their respective pages later!! -->
+        <Tab Title="Stats">
+            <ShellContent ContentTemplate="{DataTemplate views:DashboardPage}" Route="StatsPage" />
+        </Tab>
+
+        <Tab Title="News">
+            <ShellContent ContentTemplate="{DataTemplate views:DashboardPage}" Route="NewsPage" />
+        </Tab>
+
+        <Tab Title="Profile">
+            <ShellContent ContentTemplate="{DataTemplate views:DashboardPage}" Route="ProfilePage" />
+        </Tab>
+
+        <Tab Title="Backend Test Lab">
+            <ShellContent ContentTemplate="{DataTemplate views:BackendTest}" Route="BackendTest" />
+        </Tab>
+
+    </TabBar>
 
 </Shell>

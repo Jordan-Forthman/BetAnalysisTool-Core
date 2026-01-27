@@ -72,7 +72,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiXaml Update="Views\BackendTest.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="views\LoginPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\DashboardPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	</ItemGroup>
@@ -86,5 +92,6 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\..\BetAnalysisTool.Core\BetAnalysisTool.Core.csproj" />
 	</ItemGroup>
+
 
 </Project>

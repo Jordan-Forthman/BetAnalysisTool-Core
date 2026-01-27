@@ -38,8 +38,10 @@ namespace BetAnalysisTool.Maui.ViewModels
 
                     await Shell.Current.DisplayAlert("Success", $"Logged in as {name}", "OK");
 
-                    // Navigate to main app or store token
-                    // await Shell.Current.GoToAsync("//MainPage");
+                    // NAVIGATE:
+                    // The "///" allows us to switch from the Login route to the MainApp route
+                    // effectively resetting the navigation stack so the back button doesn't go to Login
+                    await Shell.Current.GoToAsync("//DashboardPage");
                 }
                 else
                 {

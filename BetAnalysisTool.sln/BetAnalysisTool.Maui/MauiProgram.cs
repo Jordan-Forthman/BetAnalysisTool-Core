@@ -31,6 +31,8 @@ namespace BetAnalysisTool.Maui
 
             builder.Services.AddTransient<LoginPage>();
             builder.Services.AddTransient<LoginPageViewModel>();
+            builder.Services.AddTransient<DashboardPage>();
+            builder.Services.AddTransient<BackendTest>();
 
 #if DEBUG
             builder.Logging.AddDebug();
