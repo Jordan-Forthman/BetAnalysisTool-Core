@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using BetAnalysisTool.Maui.ViewModels;
 using BetAnalysisTool.Maui.Views;
+using Auth0.OidcClient;
 
 namespace BetAnalysisTool.Maui
 {
@@ -16,6 +17,17 @@ namespace BetAnalysisTool.Maui
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
+
+            // --- START ADDED AUTH0 CODE ---
+            builder.Services.AddSingleton(new Auth0Client(new()
+            {
+                Domain = "bet-analysis.us.auth0.com",
+                ClientId = "gzCS6dcuQ6OwEIi6LLj9LjfJsyGC7YWj",
+                RedirectUri = "myapp://callback",
+                PostLogoutRedirectUri = "myapp://callback",
+                Scope = "openid profile email"
+            }));
+            // --- END ADDED AUTH0 CODE ---
 
             builder.Services.AddTransient<LoginPage>();
             builder.Services.AddTransient<LoginPageViewModel>();

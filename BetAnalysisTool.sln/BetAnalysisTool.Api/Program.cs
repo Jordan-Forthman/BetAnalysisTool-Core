@@ -1,20 +1,34 @@
 using BetAnalysisTool.Api.Services;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.AspNetCore.Authentication.JwtBearer; 
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Auth0 authentication middleware
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.Authority = $"https://{builder.Configuration["Auth0:Domain"]}/";
+    options.Audience = builder.Configuration["Auth0:Audience"];
+});
+//
 
 builder.Services.AddScoped<IStatsService, StatsService>();
 
 // BallDontLie HttpClient with Authorization header
 builder.Services.AddHttpClient("BallDontLieClient", client =>
 {
-    client.BaseAddress = new Uri(builder.Configuration["BallDontLie:BaseUrl"]);
+    //client.BaseAddress = new Uri(builder.Configuration["BallDontLie:BaseUrl"]);
+    var baseUrl = builder.Configuration["BallDontLie:BaseUrl"] ?? "https://api.balldontlie.io/v1";
+    client.BaseAddress = new Uri(baseUrl);
     client.DefaultRequestHeaders.Add("Authorization", builder.Configuration["BallDontLie:ApiKey"]);
 });
 
@@ -32,6 +46,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+
+app.UseAuthentication(); //must come BEFORE authorization
 app.UseAuthorization();
 
 app.MapControllers();
