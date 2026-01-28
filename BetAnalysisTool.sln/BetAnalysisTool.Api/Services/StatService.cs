@@ -11,51 +11,56 @@ namespace BetAnalysisTool.Api.Services;
 
 public class StatsService : IStatsService
 {
-    private readonly IHttpClientFactory _clientFactory; // Injected factory for creating named HttpClients.
-    private readonly IMemoryCache _cache; // Injected cache for storing responses: Reduces redundant API hits.
+    private readonly HttpClient _httpClient; // CHANGED: Direct Client instead of Factory
+    private readonly IMemoryCache _cache;
 
-    // Constructor for DI (Dependency Injection): Ensures service is loosely coupled, testable by mocking dependencies.
-    public StatsService(IHttpClientFactory clientFactory, IMemoryCache cache)
+    // CHANGED: Constructor now accepts HttpClient directly
+    // This matches the "AddHttpClient<IStatsService, StatsService>" in Program.cs
+    public StatsService(HttpClient httpClient, IMemoryCache cache)
     {
-        _clientFactory = clientFactory;
+        _httpClient = httpClient;
         _cache = cache;
     }
 
-    // Fetches all NBA teams (non-paginated endpoint).
     public async Task<List<Team>> GetTeamsAsync()
     {
-        const string cacheKey = "BallDontLie_Teams"; // Unique endpoint key prevents collisions
-        if (!_cache.TryGetValue(cacheKey, out List<Team> teams)) // Cache hit check
+        const string cacheKey = "BallDontLie_Teams";
+
+        if (!_cache.TryGetValue(cacheKey, out List<Team> teams))
         {
-            var client = _clientFactory.CreateClient("BallDontLieClient"); // Name client
-            var response = await client.GetFromJsonAsync<PagedResponse<Team>>("/teams"); // Direct deserialization to model
-            teams = response?.Data ?? new List<Team>(); // Handle API errors on empty list via null-coalescense 
-            _cache.Set(cacheKey, teams, TimeSpan.FromHours(24));  // Long cache: teams stats dont change often.
+            // CHANGED: Use _httpClient directly. 
+            // The BaseURL and API Key are already configured in Program.cs, so we just pass "teams"
+            var response = await _httpClient.GetFromJsonAsync<PagedResponse<Team>>("teams");
+
+            teams = response?.Data ?? new List<Team>();
+            _cache.Set(cacheKey, teams, TimeSpan.FromHours(24));
         }
         return teams;
     }
 
-    // Fetch paginated players with optional search params.
     public async Task<PagedResponse<Player>> GetPlayersAsync(string search = null, int perPage = 25, int page = 1)
     {
-        var queryParams = new Dictionary<string, string>  // Dict for flexible param collection.
+        var queryParams = new Dictionary<string, string>
         {
             { "search", search },
             { "per_page", perPage.ToString() },
             { "page", page.ToString() }
         };
-        var query = BuildQueryString(queryParams);  // Helper converts dict to "?key=value&..."
-        var cacheKey = $"BallDontLie_Players_{query}";  // Includes query in key for cache specificity
+
+        var query = BuildQueryString(queryParams);
+        var cacheKey = $"BallDontLie_Players_{query}";
+
         if (!_cache.TryGetValue(cacheKey, out PagedResponse<Player> response))
         {
-            var client = _clientFactory.CreateClient("BallDontLieClient");
-            response = await client.GetFromJsonAsync<PagedResponse<Player>>($"/players?{query}");  // Appends query to endpoint
-            _cache.Set(cacheKey, response, TimeSpan.FromMinutes(30));  // Medium cache: players stats change occasionally.
+            // CHANGED: Use _httpClient directly
+            // Note: Remove the "/" at the start of "players" to ensure it appends to the BaseAddress correctly
+            response = await _httpClient.GetFromJsonAsync<PagedResponse<Player>>($"players?{query}");
+            _cache.Set(cacheKey, response, TimeSpan.FromMinutes(30));
         }
-        return response ?? new PagedResponse<Player> { Data = new List<Player>(), Meta = new Meta() };  // Fallback to empty for error resilience.
+
+        return response ?? new PagedResponse<Player> { Data = new List<Player>(), Meta = new Meta() };
     }
 
-    // Fetches paginated games with filters (dates, teams, post-season).
     public async Task<PagedResponse<Game>> GetGamesAsync(DateTime? startDate = null, DateTime? endDate = null, int[] teamIds = null, bool postseason = false, int perPage = 25, int page = 1)
     {
         var queryParams = new Dictionary<string, string>
@@ -64,26 +69,41 @@ public class StatsService : IStatsService
             { "page", page.ToString() },
             { "postseason", postseason ? "true" : null }
         };
+
         if (startDate.HasValue) queryParams["start_date"] = startDate.Value.ToString("yyyy-MM-dd");
         if (endDate.HasValue) queryParams["end_date"] = endDate.Value.ToString("yyyy-MM-dd");
+
+        // Note: The logic for arrays needs to happen in BuildQueryString or handled manually here if your helper doesn't support it.
+        // Assuming your BuildQueryString handles this loop or you add them manually:
+        // (This part of your original logic was slightly tricky with Dictionary keys, but I've left it as is assuming your helper works)
         if (teamIds != null && teamIds.Length > 0)
         {
-            foreach (var id in teamIds) queryParams.Add("team_ids[]", id.ToString()); // Multi-add for array params. API expects array params as repeated keys.
+            // NOTE: Dictionaries can't have duplicate keys. 
+            // If your API needs "team_ids[]=1&team_ids[]=2", a Dictionary<string,string> will overwrite the key.
+            // See the note below the code block for a fix on this.
         }
+
         var query = BuildQueryString(queryParams);
+        // Manually appending IDs if the helper didn't capture them (due to dictionary key uniqueness)
+        if (teamIds != null)
+        {
+            foreach (var id in teamIds) query += $"&team_ids[]={id}";
+        }
+
         var cacheKey = $"BallDontLie_Games_{query}";
+
         if (!_cache.TryGetValue(cacheKey, out PagedResponse<Game> response))
         {
-            var client = _clientFactory.CreateClient("BallDontLieClient");
-            response = await client.GetFromJsonAsync<PagedResponse<Game>>($"/games?{query}");
-            _cache.Set(cacheKey, response, TimeSpan.FromMinutes(10));  // Short cache: game dynamics change frequently.
+            response = await _httpClient.GetFromJsonAsync<PagedResponse<Game>>($"games?{query}");
+            _cache.Set(cacheKey, response, TimeSpan.FromMinutes(10));
         }
+
         return response ?? new PagedResponse<Game> { Data = new List<Game>(), Meta = new Meta() };
     }
 
-    /// Fetches paginated stats with extended filters (players, games, seasons, dates). ** Enables matchup analysis. **
     public async Task<PagedResponse<Stat>> GetStatsAsync(int[] playerIds = null, int[] gameIds = null, int[] seasons = null, DateTime? startDate = null, DateTime? endDate = null, bool postseason = false, int perPage = 25, int page = 1)
     {
+        // Basic params
         var queryParams = new Dictionary<string, string>
         {
             { "per_page", perPage.ToString() },
@@ -92,30 +112,35 @@ public class StatsService : IStatsService
         };
         if (startDate.HasValue) queryParams["start_date"] = startDate.Value.ToString("yyyy-MM-dd");
         if (endDate.HasValue) queryParams["end_date"] = endDate.Value.ToString("yyyy-MM-dd");
-        if (playerIds != null) foreach (var id in playerIds) queryParams.Add("player_ids[]", id.ToString());
-        if (gameIds != null) foreach (var id in gameIds) queryParams.Add("game_ids[]", id.ToString());
-        if (seasons != null) foreach (var season in seasons) queryParams.Add("seasons[]", season.ToString());
+
         var query = BuildQueryString(queryParams);
+
+        // Append array params manually to avoid Dictionary key collisions
+        if (playerIds != null) foreach (var id in playerIds) query += $"&player_ids[]={id}";
+        if (gameIds != null) foreach (var id in gameIds) query += $"&game_ids[]={id}";
+        if (seasons != null) foreach (var s in seasons) query += $"&seasons[]={s}";
+
         var cacheKey = $"BallDontLie_Stats_{query}";
+
         if (!_cache.TryGetValue(cacheKey, out PagedResponse<Stat> response))
         {
-            var client = _clientFactory.CreateClient("BallDontLieClient");
-            response = await client.GetFromJsonAsync<PagedResponse<Stat>>($"/stats?{query}");
-            _cache.Set(cacheKey, response, TimeSpan.FromMinutes(10));  // Short cache: stats dynamic
+            response = await _httpClient.GetFromJsonAsync<PagedResponse<Stat>>($"stats?{query}");
+            _cache.Set(cacheKey, response, TimeSpan.FromMinutes(10));
         }
+
         return response ?? new PagedResponse<Stat> { Data = new List<Stat>(), Meta = new Meta() };
     }
 
-    // Helper to build URL-encoded query string from dict. Handle special chars/arrays properly. Skip null/empty values. Supports multi-value key (E.g. ids[]).
+    // Kept your helper, but note the limitation on duplicate keys
     private string BuildQueryString(Dictionary<string, string> paramsDict)
     {
-        if (paramsDict == null || paramsDict.Count == 0) return string.Empty; // Early return for no params
+        if (paramsDict == null || paramsDict.Count == 0) return string.Empty;
 
-        var query = HttpUtility.ParseQueryString(string.Empty); // Create empty query collection
+        var query = HttpUtility.ParseQueryString(string.Empty);
         foreach (var kvp in paramsDict)
         {
             if (!string.IsNullOrEmpty(kvp.Value)) query[kvp.Key] = kvp.Value;
         }
-        return query.ToString(); // Output encoded string (E.g. "key=value&ids[]=1&ids[]=2").
+        return query.ToString();
     }
 }

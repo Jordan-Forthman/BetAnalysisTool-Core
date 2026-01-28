@@ -24,11 +24,14 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddScoped<IStatsService, StatsService>();
 
 // BallDontLie HttpClient with Authorization header
-builder.Services.AddHttpClient("BallDontLieClient", client =>
+builder.Services.AddHttpClient<IStatsService, StatsService>(client =>
 {
-    //client.BaseAddress = new Uri(builder.Configuration["BallDontLie:BaseUrl"]);
-    var baseUrl = builder.Configuration["BallDontLie:BaseUrl"] ?? "https://api.balldontlie.io/v1";
+    // 1. Set the Base URL (using the new V1 endpoint)
+    var baseUrl = builder.Configuration["BallDontLie:BaseUrl"] ?? "https://api.balldontlie.io/v1/";
     client.BaseAddress = new Uri(baseUrl);
+
+    // 2. Add the API Key Header
+    // Ensure "BallDontLie:ApiKey" exists in your appsettings.json
     client.DefaultRequestHeaders.Add("Authorization", builder.Configuration["BallDontLie:ApiKey"]);
 });
 
